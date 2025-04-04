@@ -23,7 +23,8 @@ const NavBar = props => {
         handleSearch,
         handleSearchSubmit,
         handleOpenCart,
-        handleCloseCart
+        handleCloseCart,
+        requireLogin // Add requireLogin prop to show login modal
     } = props;
     
     const variants = {
@@ -51,7 +52,7 @@ const NavBar = props => {
             <div className={styles.logodiv} id="0"
               onMouseEnter={handleHover}
               onMouseLeave={handleHover}
-              onClick={handleHome}
+              onClick={requireLogin} 
             >
                 <Logo className={styles.svg} style={{ fill: "#fff" }}/>
                 <h3>Game Store</h3>
@@ -103,7 +104,7 @@ const NavBar = props => {
                     <Browse 
                       className={styles.svg} 
                       style={{ fill: "#fff" }}/>
-                    <h3 onClick={handleBrowse}>Browse Store</h3>
+                    <h3 onClick={requireLogin}>Browse Store</h3> {/* Show login modal when clicked */}
                   </div>
                 }
             </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LoginModal from './LoginModal';
 import styles from './Home.module.css';
 import NavBar from '../../Components/NavBar/NavBar';
 import { ReactComponent as GitHubLogo } from "../../Resources/image/githublogo.svg";
@@ -47,57 +48,43 @@ const Home = props => {
     ]);
   }
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleLogin = () => {
+    // Perform login logic here
+    window.localStorage.setItem("LoginUser", "true");
+    setIsModalOpen(false);
+  };
+
+  // Function to show login modal and block further action
+  const requireLogin = () => {
+    setIsModalOpen(true); // Show login modal
+    return false; // Block further action
+  };
+
   const handleBrowse = () => {
     if (!window.localStorage.getItem("LoginUser")) {
-        navigate('/react-ecommerce-store-main/login');
-        return;
+      requireLogin(); // Show login modal and block navigation
+      return;
     }
+    // If logged in, proceed to browse
     setOverlap(true);
     setTimeout(() => {
       setBrowsing(true);
       navigate('/react-ecommerce-store-main/browse');
     }, 1500);
-  }
+  };
 
-  const handleHome = () => {
-    if (!window.localStorage.getItem("LoginUser")) {
-        navigate('/react-ecommerce-store-main/login');
-        return;
-    }
-    setBrowsing(false);
-    navigate('/');
-  }
-
-  const handleNavGamePage = () => {
-    if (!window.localStorage.getItem("LoginUser")) {
-        navigate('/react-ecommerce-store-main/login');
-        return;
-    }
-    setHoverState([...hoverState, hoverState[21].hovered = false]);
-    navigate('/react-ecommerce-store/games/riseofthetombraider');
-  }
-  
-  const handleNavNotFoundPage = () => {
-    if (!window.localStorage.getItem("LoginUser")) {
-        navigate('/react-ecommerce-store-main/login');
-        return;
-    }
-    navigate('/react-ecommerce-store/this-page');
-  }
-  
-  const handleNavNotFoundQuery = () => {
-    if (!window.localStorage.getItem("LoginUser")) {
-        navigate('/react-ecommerce-store-main/login');
-        return;
-    }
-    navigate('/react-ecommerce-store/games/404');
-  }
-  
   const handlePlayDice = () => {
     if (!window.localStorage.getItem("LoginUser")) {
-        navigate('/react-ecommerce-store-main/login');
-        return;
+      requireLogin(); // Show login modal and block navigation
+      return;
     }
+    // If logged in, proceed to play dice
     let randomIndex = Math.floor(Math.random() * 32);
     let randomSurname = games[randomIndex].surname;
     setOverlap(true);
@@ -105,18 +92,56 @@ const Home = props => {
       setBrowsing(true);
       navigate(`/react-ecommerce-store/games/${randomSurname}`);
     }, 1500);
-  }
+  };
+
+  const handleHome = () => {
+    if (!window.localStorage.getItem("LoginUser")) {
+      requireLogin(); // Show login modal and block navigation
+      return;
+    }
+    // If logged in, proceed to home
+    setBrowsing(false);
+    navigate('/');
+  };
+
+  const handleNavGamePage = () => {
+    if (!window.localStorage.getItem("LoginUser")) {
+      requireLogin(); // Show login modal and block navigation
+      return;
+    }
+    // If logged in, proceed to game page
+    setHoverState([...hoverState, hoverState[21].hovered = false]);
+    navigate('/react-ecommerce-store/games/riseofthetombraider');
+  };
+  
+  const handleNavNotFoundPage = () => {
+    if (!window.localStorage.getItem("LoginUser")) {
+      requireLogin(); // Show login modal and block navigation
+      return;
+    }
+    // If logged in, proceed to not found page
+    navigate('/react-ecommerce-store/this-page');
+  };
+  
+  const handleNavNotFoundQuery = () => {
+    if (!window.localStorage.getItem("LoginUser")) {
+      requireLogin(); // Show login modal and block navigation
+      return;
+    }
+    // If logged in, proceed to not found query page
+    navigate('/react-ecommerce-store/games/404');
+  };
 
   const variants = {
     hidden: { opacity: 1, x: -150 },
     visible: { opacity: 1, x: 0 },
     exit: { opacity: 0, x: 150 },
-  }
+  };
 
   const buttonVariants = {
     hidden: { opacity: 0, y: 900 },
     visible: { opacity: 1, y: 0, transition: {  y: { type: "tween", duration: 1.5, bounce: 0.3 }} },
-  }
+  };
 
   return (
     <div className={styles.main}>
@@ -143,7 +168,10 @@ const Home = props => {
               handleRemoveFromCart={handleRemoveFromCart}
               openGamePage={openGamePage}
       /> : null}
-        <div className={styles.home}>
+        <div className={styles.home}>        
+          {isModalOpen && (
+            <LoginModal onClose={handleCloseModal} onLogin={handleLogin} />
+          )}
 
                 <video autoPlay muted loop className={styles.video}>
                   <source src={require("../../Resources/image/pyke.mp4")} type="video/mp4" />
@@ -159,20 +187,21 @@ const Home = props => {
                   cartAmount={cartAmount}
                   handleOpenCart={handleOpenCart}
                   handleCloseCart={handleCloseCart}
+                  requireLogin={requireLogin} // Pass requireLogin to NavBar
                 />
                 <div className={styles.container}>
                     <div className={styles.center}>
                         <div className={styles.splash}>
-                          <h1>Game Store</h1>
-                          <p className={styles.intro}>Find the latest and greatest games at unbeatable prices. Benefit from round-the-clock support, exclusive deals, and a seamless buying experience. Got feedback? Connect with us or check out career openings!</p>
+                          <h1 onClick={requireLogin}>Game Store</h1> {/* Show login modal when clicked */}
+                          <p className={styles.intro} onClick={requireLogin}>Find the latest and greatest games at unbeatable prices. Benefit from round-the-clock support, exclusive deals, and a seamless buying experience. Got feedback? Connect with us or check out career openings!</p>
                         </div>
     
                         <div className={styles.buttons}>
-                              <button className={`${styles.cta} ${styles.browseBtn}`} onClick={handleBrowse} aria-label="Browse">
+                              <button className={`${styles.cta} ${styles.browseBtn}`} onClick={requireLogin} aria-label="Browse">
                                 <Enter className={styles.ctaSVG} />
                                 Browse
                               </button>
-                              <button className={styles.cta} onClick={handlePlayDice} aria-label="Open random game page">
+                              <button className={styles.cta} onClick={requireLogin} aria-label="Open random game page">
                                 <Dice className={styles.ctaSVG} />
                                 Play Dice
                               </button>
