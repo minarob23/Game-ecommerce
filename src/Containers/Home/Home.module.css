@@ -1,3 +1,30 @@
+/* Home.module.css */
+/* Font Face Definitions */
+@font-face {
+  font-family: 'GT Regular';
+src: url('../../Resources/fonts/walsheim/GTWalsheimPro-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GT Medium';
+src: url('../../Resources/fonts/walsheim/GTWalsheimPro-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GT Bold';
+src: url('../../Resources/fonts/walsheim/GTWalsheimPro-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Rest of your existing CSS */
 * {
   margin: 0;
   padding: 0;
@@ -118,7 +145,7 @@ a {
 .intro {
   color: white;
   font-family: "GT Regular";
-  font-size: 19px;
+  font-size: 15px;
   opacity: 1;
 }
 
@@ -154,10 +181,12 @@ a {
 
 .modal h2 {
   margin-bottom: 10px;
+  font-family: "GT Bold";
 }
 
 .modal p {
   margin-bottom: 20px;
+  font-family: "GT Regular";
 }
 
 .modal button {
@@ -168,6 +197,7 @@ a {
   cursor: pointer;
   background-color: #45c1bc;
   color: white;
+  font-family: "GT Medium";
 }
 
 .modal button:hover {

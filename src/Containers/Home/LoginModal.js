@@ -1,11 +1,13 @@
 import React from 'react';
 import styles from './Home.module.css';
+import { useNavigate } from "react-router-dom";
 
-const LoginModal = ({ onClose, onLogin }) => {
+const LoginModal = ({ onClose }) => {
+  const navigate = useNavigate();
+
   const handleLogin = () => {
-    // Perform login logic here
-    onLogin();
     onClose();
+    navigate('/react-ecommerce-store/login'); 
   };
 
   return (

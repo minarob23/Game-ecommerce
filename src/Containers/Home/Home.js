@@ -55,23 +55,20 @@ const Home = props => {
   };
 
   const handleLogin = () => {
-    // Perform login logic here
     window.localStorage.setItem("LoginUser", "true");
     setIsModalOpen(false);
   };
 
-  // Function to show login modal and block further action
   const requireLogin = () => {
-    setIsModalOpen(true); // Show login modal
-    return false; // Block further action
+    setIsModalOpen(true);
+    return false;
   };
 
   const handleBrowse = () => {
     if (!window.localStorage.getItem("LoginUser")) {
-      requireLogin(); // Show login modal and block navigation
+      requireLogin();
       return;
     }
-    // If logged in, proceed to browse
     setOverlap(true);
     setTimeout(() => {
       setBrowsing(true);
@@ -81,10 +78,9 @@ const Home = props => {
 
   const handlePlayDice = () => {
     if (!window.localStorage.getItem("LoginUser")) {
-      requireLogin(); // Show login modal and block navigation
+      requireLogin();
       return;
     }
-    // If logged in, proceed to play dice
     let randomIndex = Math.floor(Math.random() * 32);
     let randomSurname = games[randomIndex].surname;
     setOverlap(true);
@@ -96,39 +92,35 @@ const Home = props => {
 
   const handleHome = () => {
     if (!window.localStorage.getItem("LoginUser")) {
-      requireLogin(); // Show login modal and block navigation
+      requireLogin();
       return;
     }
-    // If logged in, proceed to home
     setBrowsing(false);
     navigate('/');
   };
 
   const handleNavGamePage = () => {
     if (!window.localStorage.getItem("LoginUser")) {
-      requireLogin(); // Show login modal and block navigation
+      requireLogin();
       return;
     }
-    // If logged in, proceed to game page
     setHoverState([...hoverState, hoverState[21].hovered = false]);
     navigate('/react-ecommerce-store/games/riseofthetombraider');
   };
   
   const handleNavNotFoundPage = () => {
     if (!window.localStorage.getItem("LoginUser")) {
-      requireLogin(); // Show login modal and block navigation
+      requireLogin();
       return;
     }
-    // If logged in, proceed to not found page
     navigate('/react-ecommerce-store/this-page');
   };
   
   const handleNavNotFoundQuery = () => {
     if (!window.localStorage.getItem("LoginUser")) {
-      requireLogin(); // Show login modal and block navigation
+      requireLogin();
       return;
     }
-    // If logged in, proceed to not found query page
     navigate('/react-ecommerce-store/games/404');
   };
 
@@ -152,7 +144,6 @@ const Home = props => {
             initial="hidden"
             animate="visible"
           >
-    
           </motion.div> 
       : null}
 
@@ -168,51 +159,58 @@ const Home = props => {
               handleRemoveFromCart={handleRemoveFromCart}
               openGamePage={openGamePage}
       /> : null}
-        <div className={styles.home}>        
-          {isModalOpen && (
-            <LoginModal onClose={handleCloseModal} onLogin={handleLogin} />
-          )}
+      
+      <div className={styles.home}>        
+        {isModalOpen && (
+          <LoginModal onClose={handleCloseModal} onLogin={handleLogin} />
+        )}
 
-                <video autoPlay muted loop className={styles.video}>
-                  <source src={require("../../Resources/image/pyke.mp4")} type="video/mp4" />
-                </video>
+        <video autoPlay muted loop className={styles.video}>
+          <source src={require("../../Resources/image/pyke.mp4")} type="video/mp4" />
+        </video>
 
-                <NavBar 
-                  handleHover={handleHover} 
-                  hoverState={hoverState}
-                  browsing={browsing}
-                  handleBrowse={handleBrowse}
-                  handleHome={handleHome}
-                  landingPage={landingPage}
-                  cartAmount={cartAmount}
-                  handleOpenCart={handleOpenCart}
-                  handleCloseCart={handleCloseCart}
-                  requireLogin={requireLogin} // Pass requireLogin to NavBar
-                />
-                <div className={styles.container}>
-                    <div className={styles.center}>
-                        <div className={styles.splash}>
-                          <h1 onClick={requireLogin}>Game Store</h1> {/* Show login modal when clicked */}
-                          <p className={styles.intro} onClick={requireLogin}>Find the latest and greatest games at unbeatable prices. Benefit from round-the-clock support, exclusive deals, and a seamless buying experience. Got feedback? Connect with us or check out career openings!</p>
-                        </div>
+        <NavBar 
+          handleHover={handleHover} 
+          hoverState={hoverState}
+          browsing={browsing}
+          handleBrowse={handleBrowse}
+          handleHome={handleHome}
+          landingPage={landingPage}
+          cartAmount={cartAmount}
+          handleOpenCart={handleOpenCart}
+          handleCloseCart={handleCloseCart}
+          requireLogin={requireLogin}
+        />
+        
+        <div className={styles.container}>
+          <div className={styles.center}>
+            <div className={styles.splash}>
+              <h1>Game Store</h1>
+              <p className={styles.intro}>
+                Find the latest and greatest games at unbeatable prices. Benefit from round-the-clock support, 
+                exclusive deals, and a seamless buying experience. Got feedback? Connect with us or check out career openings!
+              </p>
+            </div>
     
-                        <div className={styles.buttons}>
-                              <button className={`${styles.cta} ${styles.browseBtn}`} onClick={requireLogin} aria-label="Browse">
-                                <Enter className={styles.ctaSVG} />
-                                Browse
-                              </button>
-                              <button className={styles.cta} onClick={requireLogin} aria-label="Open random game page">
-                                <Dice className={styles.ctaSVG} />
-                                Play Dice
-                              </button>
-                              <a href="https://github.com/minarob23" target="_blank"><button className={styles.cta} aria-label="View Repository">
-                                <GitHubLogo className={styles.ctaSVG} />
-                                GitHub
-                              </button></a>
-                        </div>
-                    </div>
-                </div>
+            <div className={styles.buttons}>
+              <button className={`${styles.cta} ${styles.browseBtn}`} onClick={requireLogin} aria-label="Browse">
+                <Enter className={styles.ctaSVG} />
+                Browse
+              </button>
+              <button className={styles.cta} onClick={requireLogin} aria-label="Open random game page">
+                <Dice className={styles.ctaSVG} />
+                Play Dice
+              </button>
+              <a href="https://github.com/minarob23" target="_blank" rel="noopener noreferrer">
+                <button className={styles.cta} aria-label="View Repository">
+                  <GitHubLogo className={styles.ctaSVG} />
+                  GitHub
+                </button>
+              </a>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
   );
 }

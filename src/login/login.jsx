@@ -74,7 +74,7 @@ const GameStoreAuth = () => {
     }
 
     try {
-      const response = await fetch("http://localhost/Game-Store-E-Commerce-main/src/login/index.php", {
+      const response = await fetch("http://localhost/game-ecommerce-gp/src/login/index.php", {
 
         method: 'POST',
         headers: {
