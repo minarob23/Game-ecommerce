@@ -2,7 +2,7 @@
 /* Font Face Definitions */
 @font-face {
   font-family: 'GT Regular';
-src: url('../../Resources/fonts/walsheim/GTWalsheimPro-Regular.ttf') format('truetype');
+  src: url('../../Resources/fonts/walsheim/GTWalsheimPro-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -10,7 +10,7 @@ src: url('../../Resources/fonts/walsheim/GTWalsheimPro-Regular.ttf') format('tru
 
 @font-face {
   font-family: 'GT Medium';
-src: url('../../Resources/fonts/walsheim/GTWalsheimPro-Medium.ttf') format('truetype');
+  src: url('../../Resources/fonts/walsheim/GTWalsheimPro-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -18,7 +18,7 @@ src: url('../../Resources/fonts/walsheim/GTWalsheimPro-Medium.ttf') format('true
 
 @font-face {
   font-family: 'GT Bold';
-src: url('../../Resources/fonts/walsheim/GTWalsheimPro-Bold.ttf') format('truetype');
+  src: url('../../Resources/fonts/walsheim/GTWalsheimPro-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -108,16 +108,31 @@ a {
   color: black;
   padding: 10px 28px;
   display: flex;
+  align-items: center;
+  /* Added for better alignment */
   gap: 12px;
   font-family: "GT Medium";
   font-size: 16px;
   transition: 0.3s all;
   cursor: pointer;
+  min-width: 150px;
+  /* Added to prevent wrapping */
+  white-space: nowrap;
+  /* Prevents text wrapping */
 }
 
 .cta:hover {
-  transform: scale(1.03);
   background-color: #45c1bc;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.splash {
+  animation: float 6s ease-in-out infinite;
 }
 
 .cta * {

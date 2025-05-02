@@ -9,6 +9,8 @@ import Filters from '../../Components/Filters/Filters';
 import Grid from '../../Components/Grid/Grid';
 import Cart from '../../Components/Cart/Cart';
 import Footer from '../../Components/Footer/Footer';
+import Chatbot from '../../Components/Chatbot/Chatbot';
+import chatbotLogo from '../../Resources/image/chatbot_logo.png';
 
 const Browse = props => {
   const { 
@@ -44,10 +46,11 @@ const Browse = props => {
           setHoverState,
           openGamePage
         } = props;
-    
+
     const navigate = useNavigate();
     const [landingPage, setLandingPage] = useState(false);
     const [grid, setGrid] = useState(true);
+  const [chatbotOpen, setChatbotOpen] = useState(false);
 
     const handleLayoutSwitch = (e) => {
       if (e.target.id == "grid") {
@@ -59,20 +62,22 @@ const Browse = props => {
 
     useEffect(() => {
       if (currentFilter == "none") {
-        setShownGames(allGames);
+        setShownGames(allGames.filter(game => !game.isHidden));
 
       } else if (currentFilter != "Ratings" && currentFilter != "Reviews" && currentFilter != "Wishlist") {
           let filteredShownGames = allGames.filter(game => game.genre === currentFilter);
           setShownGames(filteredShownGames);
 
       } else if (currentFilter === "Ratings") {
-          let filteredShownGames = allGames.slice(0);
+          let filteredShownGames = allGames.filter(game => game.isLiked === true);
           filteredShownGames = filteredShownGames.sort(function(a, b) {
             return b.rating - a.rating;
           })
           setShownGames(filteredShownGames);
 
       } else if (currentFilter === "Reviews") {
+          let filteredShownGames = allGames.filter(game => game.reviewAdded === true);
+          setShownGames(filteredShownGames);
           setReviewDisplay(true);
 
       } else if (currentFilter === "Wishlist") {
@@ -166,33 +171,6 @@ const Browse = props => {
                       Clear Filter
                     </button>
                   </div>
-                  
-                  <div className={styles.displayStyle}>
-                    <p>Display options:</p>
-                    <button 
-                      className={styles.displayBtn} 
-                      onClick={handleLayoutSwitch} 
-                      id="grid" 
-                      aria-label='Display grids'
-                    >
-                      <Grids 
-                        className={styles.displayItem} 
-                        style={{ fill: grid ? "#e5e5e5" : "#6f6f6f" }}
-                      />
-                    </button>
-
-                    <button 
-                      className={styles.displayBtn} 
-                      onClick={handleLayoutSwitch} 
-                      id="columns" 
-                      aria-label='Display columns'
-                    > 
-                      <Columns 
-                        className={styles.displayItem} 
-                        style={{ fill: grid ? "#6f6f6f" : "#e5e5e5" }}
-                      />
-                    </button>
-                  </div>
                 </div>
 
                     <Grid 
@@ -207,13 +185,21 @@ const Browse = props => {
                       handleSelectGame={handleSelectGame}
                       cartDisplayed={cartDisplayed}
                       hoverState={hoverState}
+                      currentFilter={currentFilter}
                     />
               </div>
             </div>
         </AnimatedPage>
         <Footer />
+        <button 
+          className={styles.chatbotButton} 
+          onClick={() => setChatbotOpen(!chatbotOpen)}
+        >
+          <img src={chatbotLogo} alt="Chat" className={styles.chatbotIcon} />
+        </button>
+        <Chatbot isOpen={chatbotOpen} onClose={() => setChatbotOpen(false)} />
       </section>
     );
   }
-  
+
   export default Browse;

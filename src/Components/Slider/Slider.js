@@ -27,9 +27,9 @@ const Slider = props => {
   const location = useLocation();
 
   useEffect(() => {
-    const selectedGameIndex = allGames.findIndex(game => "/react-ecommerce-store/games/" + game.surname === location.pathname);
+    const selectedGameIndex = allGames.findIndex(game => "/game-ecommerce-store/games/" + game.surname === location.pathname);
     setSelectedGame(allGames[selectedGameIndex]);
-  }, []);
+  }, [allGames, location.pathname, setSelectedGame]); // Added dependencies here
 
   const properties = {
     duration: 6000,
@@ -107,7 +107,7 @@ const Slider = props => {
               </div>
             ))}
           </Slide>
-    
+
             <button 
               className={styles.backwards} 
               onClick={back} 
@@ -121,7 +121,7 @@ const Slider = props => {
                   style={{ fill: hoverState[22].hovered ? "#fff" : "#ccc" }}
                 />
             </button>
-    
+
             <button 
               className={styles.forward} 
               onClick={next} id="23" 

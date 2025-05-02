@@ -128,8 +128,36 @@ body {
 }
 
 .displayItem {
-    transform: scale(0.9);
-    transition: 0.3s all;
+    width: 20px;
+    height: 20px;
+}
+
+.chatbotButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatbotIcon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+}
+
+.chatbotButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 @media screen and (max-width: 850px) {
@@ -175,4 +203,3 @@ body {
         font-size: 12px;
     }
 }
-

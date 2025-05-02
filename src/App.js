@@ -1,22 +1,44 @@
-import logo from './logo.svg';
-import styles from './App.module.css';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useState } from 'react';
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Browse from './Containers/Browse/Browse';
 import GamePage from './Containers/GamePage/GamePage';
 import NotFound from './Containers/NotFound/NotFound';
 import Home from './Containers/Home/Home';
 import { AnimatePresence } from "framer-motion";
-import GameStoreAuth from './login/login.jsx'; // Import the GameStoreAuth component
+import GameStoreAuth from './login/login.jsx';
 import filterNames from './utils/filterNames';
-import games from './utils/games';
+import defaultGames from './utils/games';
 import templateGame from './utils/templateGame';
+import AdminPanel from './Containers/Admin/AdminPanel';
+import AdminLogin from './Containers/Admin/AdminLogin';
+import Analytics from './Containers/Analytics/Analytics';
+import Payment from './Components/Payment/Payment';
+import FeedbackPage from './Containers/Admin/FeedbackPage';
+import VGSalesPredict from './Components/VGSalesPredict/VGSalesPredict';
+
 
 function App() {
   const [currentFilter, setCurrentFilter] = useState("none");
-  const [allGames, setAllGames] = useState(games);
-  const [cart, setCart] = useState([]);
-  const [cartAmount, setCartAmount] = useState(0);
+  const [allGames, setAllGames] = useState(() => {
+    const savedGames = localStorage.getItem('games');
+    const savedCart = localStorage.getItem('cart');
+    const games = savedGames ? JSON.parse(savedGames) : defaultGames;
+    const cartItems = savedCart ? JSON.parse(savedCart) : [];
+
+    return games.map(game => ({
+      ...game,
+      inCart: cartItems.some(cartItem => cartItem.id === game.id)
+    }));
+  });
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem('cart');
+    const parsedCart = savedCart ? JSON.parse(savedCart) : [];
+    return parsedCart;
+  });
+  const [cartAmount, setCartAmount] = useState(() => {
+    const savedCart = localStorage.getItem('cart');
+    return savedCart ? JSON.parse(savedCart).length : 0;
+  });
   const [shownGames, setShownGames] = useState(allGames);
   const [reviewDisplay, setReviewDisplay] = useState(false);
   const [cartDisplayed, setCartDisplayed] = useState(false);
@@ -133,10 +155,9 @@ function App() {
 const navigate = useNavigate();
 const location = useLocation();
 
-if (location.pathname !== "/react-ecommerce-store/" && location.pathname !== "/react-ecommerce-store/browse" && selectedGame === false) {
-  let surname = location.pathname.substring(29);
-  console.log("test");
-  let currentGame = games.find(game => game.surname === surname);
+if (location.pathname !== "/game-ecommerce-store/" && location.pathname !== "/game-ecommerce-store/browse" && selectedGame === false) {
+  let surname = location.pathname.split('/games/')[1];
+  let currentGame = allGames.find(game => game.surname === surname);
   if (currentGame !== undefined) {
     setSelectedGame(currentGame);
   } else {
@@ -149,7 +170,7 @@ async function handleBrowse() {
   setTextExtended(false);
   setCartDisplayed(false);
   setHoverState([...hoverState, hoverState[21].hovered = false]);
-  navigate('/react-ecommerce-store/browse');
+  navigate('/game-ecommerce-store/browse');
 }
 
 const handleHome = () => {
@@ -157,7 +178,7 @@ const handleHome = () => {
   setTextExtended(false);
   setCartDisplayed(false);
   setHoverState([...hoverState, hoverState[21].hovered = false]);
-  navigate('/react-ecommerce-store/');
+  navigate('/game-ecommerce-store/');
 }
 
 const handleSearch = (e) => {
@@ -170,8 +191,8 @@ const handleSearchSubmit = (e) => {
   e.preventDefault();
   setSearching(true);
 
-  if (location.pathname !== "/react-ecommerce-store/browse") {
-    navigate('/react-ecommerce-store/browse');
+  if (location.pathname !== "/game-ecommerce-store/browse") {
+    navigate('/game-ecommerce-store/browse');
   }
 }
 
@@ -182,9 +203,14 @@ const handleSelect = (e) => {
 const handleSelectGame = (e) => {
   if (e.target.tagName === "BUTTON") {
     return
-  } else if (e.target.classList[0] != "AddToCart_addToCart__zbJPe") {
-        setSelectedGame(games[e.target.parentNode.id]);
-        navigate(`/react-ecommerce-store/games/${games[e.target.parentNode.id].surname}`);
+  } else if (e.target.classList[0] !== "AddToCart_addToCart__zbJPe") {
+        const selectedGame = allGames.find(game => game.id.toString() === e.target.parentNode.id);
+        if (selectedGame) {
+          setSelectedGame(selectedGame);
+          navigate(`/game-ecommerce-store/games/${selectedGame.surname}`);
+        } else {
+          navigate('/game-ecommerce-store/browse');
+        }
   }
 }
 
@@ -210,29 +236,35 @@ const clearFilter = () => {
 const openGamePage = (e) => {
   setCartDisplayed(false);
   let selectedGameSurname = e.target.id;
-  navigate(`/react-ecommerce-store/games/${selectedGameSurname}`);
+  navigate(`/game-ecommerce-store/games/${selectedGameSurname}`);
 }
 
 const handleHover = (e) => {
-  if (hoverState[e.target.id].selected) {
+  const targetId = parseInt(e.target.id);
+
+  // Check if hoverState exists and has the target index
+  if (!hoverState || !hoverState[targetId]) {
+    return;
+  }
+
+  // Check if selected property exists
+  if (hoverState[targetId].selected) {
     return;
   }
 
   let newHoverState = hoverState.map((element, i) => {
-    if (e.target.id === i) {
-      element.hovered = !element.hovered;
-      return element
-    } else {
-      return element;
+    if (targetId === i) {
+      return { ...element, hovered: !element.hovered };
     }
+    return element;
   });
-    
+
   setHoverState(newHoverState);
 }
 
 const handleHoverGame = (e) => {
   let handledHoveredGame = allGames.map((game, i) => {
-    if (e.target.id == i) {
+    if (e.target.id === i) {
       game.isHovered = !game.isHovered
       return game
     } else {
@@ -244,57 +276,54 @@ const handleHoverGame = (e) => {
 }
 
 const handleAddToCart = (e) => {
-  let handledAddedGame = allGames.map((game, i) => {
-    if (location.pathname === "/react-ecommerce-store/browse") {
-      if (e.target.id == i) {
-        game.inCart = true
-        let newCart = cart;
-        newCart.push(game);
-        setCart(newCart);
-        setCartAmount(cartAmount + 1);
-        return game
-      } else {
-        return game;
-      }
-    } else {
-        if (selectedGame.id === i) {
-          game.inCart = true
-          let newCart = cart;
-          newCart.push(game);
-          setCart(newCart);
-          setCartAmount(cartAmount + 1);
-          return game
-        } else {
-          return game;
-        }
-    }
-  });
+    const targetId = location.pathname === "/game-ecommerce-store/browse" ? 
+      parseInt(e.target.id) : selectedGame.id;
 
-  setAllGames(handledAddedGame);
+    const updatedGames = allGames.map(game => {
+      if (game.id === targetId && !game.inCart) {
+        const updatedGame = {
+          ...game,
+          inCart: true,
+          inStock: true
+        };
+        const newCart = [...cart, updatedGame];
+        setCart(newCart);
+        localStorage.setItem('cart', JSON.stringify(newCart));
+        setCartAmount(cartAmount + 1);
+        return updatedGame;
+      }
+      return game;
+    });
+
+    setAllGames(updatedGames);
+    localStorage.setItem('games', JSON.stringify(updatedGames));
 }
 
 const clearCart = () => {
-  setCart([]);
-  setCartAmount(0);
-  const defaultGames = allGames.map((game, i) => {
-    game.inCart = false;
-    game.isHovered = false;
-    return game;
-  });
-  setAllGames(defaultGames);
-  let newHoverState = hoverState[21];
-  newHoverState.hovered = false;
-  setHoverState([
-    ...hoverState, hoverState[21] = newHoverState
-  ]);
+    setCart([]);
+    setCartAmount(0);
+    localStorage.removeItem('cart');
+    const defaultGames = allGames.map((game, i) => {
+      game.inCart = false;
+      game.isHovered = false;
+      game.inStock = true;
+      return game;
+    });
+    setAllGames(defaultGames);
+    let newHoverState = hoverState[21];
+    newHoverState.hovered = false;
+    setHoverState([
+      ...hoverState, hoverState[21] = newHoverState
+    ]);
 }
 
 const handleRemoveFromCart = (e) => {
-  let removedIndex = cart.findIndex(game => game.id == e.target.id);
+  let removedIndex = cart.findIndex(game => game.id === e.target.id);
   let newAllGames = allGames.map((game, i) => {
-    if (game.id == e.target.id) {
+    if (game.id === e.target.id) {
       game.inCart = false;
       game.isHovered = false;
+      game.inStock = true; // Restore stock status when removed from cart
       return game;
     } else {
       return game;
@@ -305,6 +334,7 @@ const handleRemoveFromCart = (e) => {
   let secondHalf = cart.slice(removedIndex + 1);
   let addedUp = firstHalf.concat(secondHalf);
   setCart(addedUp);
+  localStorage.setItem('cart', JSON.stringify(addedUp));
   setCartAmount(cartAmount - 1)
   setHoverState([...hoverState, hoverState[21].hovered = false]);
 }
@@ -312,16 +342,16 @@ const handleRemoveFromCart = (e) => {
 useEffect(() => {
   setOverlap(false);
 
-  if (location.pathname === "/react-ecommerce-store/") {
+  if (location.pathname === "/game-ecommerce-store/") {
     setBrowsing(false);
   } else {
     setBrowsing(true);
   }
 
-  if (location.pathname !== "/react-ecommerce-store/browse") {
+  if (location.pathname !== "/game-ecommerce-store/browse") {
     document.body.style.overflow = "hidden";
 
-  } else if (location.pathname === "/react-ecommerce-store/browse") {
+  } else if (location.pathname === "/game-ecommerce-store/browse") {
     document.body.style.overflow = "scroll";
   }
 }, [location.pathname])
@@ -349,7 +379,7 @@ useEffect(() => {
   return (
       <AnimatePresence exitBeforeEnter>
           <Routes key={location.pathname} location={location}>
-            <Route path="/react-ecommerce-store/" element={<Home 
+            <Route path="/game-ecommerce-store/" element={<Home 
                                         handleHover={handleHover} 
                                         hoverState={hoverState} 
                                         shownGames={shownGames} 
@@ -369,7 +399,7 @@ useEffect(() => {
                                         setOverlap={setOverlap}
                                         openGamePage={openGamePage}
                                       />} />
-            <Route path="/react-ecommerce-store/browse" element={<Browse 
+            <Route path="/game-ecommerce-store/browse" element={<Browse 
                                               cart={cart}
                                               cartAmount={cartAmount}
                                               handleHover={handleHover} 
@@ -402,7 +432,7 @@ useEffect(() => {
                                               setHoverState={setHoverState}
                                               openGamePage={openGamePage}
                                           />} />
-            <Route path="/react-ecommerce-store/games/:gameId" element={<GamePage
+            <Route path="/game-ecommerce-store/games/:gameId" element={<GamePage
                                                cart={cart}
                                                cartAmount={cartAmount}
                                                handleHover={handleHover}
@@ -432,6 +462,12 @@ useEffect(() => {
                                                handleRemoveFromCart={handleRemoveFromCart}
                                                openGamePage={openGamePage}
                                             />} />
+            <Route path="/game-ecommerce-store/admin/login" element={<AdminLogin />} />
+            <Route path="/game-ecommerce-store/admin" element={<AdminPanel allGames={allGames} setAllGames={setAllGames} />} />
+            <Route path="/game-ecommerce-store/admin/analytics" element={<Analytics allGames={allGames} />} />
+            <Route path="/game-ecommerce-store/admin/feedback" element={<FeedbackPage />} /> {/* Added feedback route */}
+            <Route path="/game-ecommerce-store/vgsales-predict" element={<VGSalesPredict />} />
+            <Route path="/game-ecommerce-store/payment" element={<Payment total={cart.reduce((sum, game) => sum + parseFloat(game.price.replace('$', '')), 0)} cart={cart} />} />
             <Route path="*" element={<NotFound 
                             cartDisplayed={cartDisplayed}
                             handleCloseCart={handleCloseCart}
@@ -451,7 +487,7 @@ useEffect(() => {
                             handleRemoveFromCart={handleRemoveFromCart}
                             openGamePage={openGamePage}
           />} />
-          <Route path="/react-ecommerce-store/login" element={<GameStoreAuth />} />
+          <Route path="/game-ecommerce-store/login" element={<GameStoreAuth />} />
           </Routes>
       </AnimatePresence>
   );

@@ -74,7 +74,7 @@ const GameStoreAuth = () => {
     }
 
     try {
-      const response = await fetch("http://localhost/game-ecommerce-gp/src/login/index.php", {
+      const response = await fetch("http://localhost/gamevault/src/login/index.php", {
 
         method: 'POST',
         headers: {
@@ -123,8 +123,13 @@ const GameStoreAuth = () => {
           if (data.data.token) {
             window.localStorage.setItem("AuthToken", data.data.token);
           }
-          // Redirect to browse page
-          navto(`/react-ecommerce-store/browse`);
+          // Check if user is admin
+          if (data.data.isAdmin) {
+            window.localStorage.setItem("isAdmin", "true");
+            window.location.href = `/game-ecommerce-store/admin`;
+          } else {
+            window.location.href = `/game-ecommerce-store/browse`;
+          }
         } else {
           setErrorMessage("Invalid credentials. Please check your email and password.");
           setShowMessage(true); // Trigger animation

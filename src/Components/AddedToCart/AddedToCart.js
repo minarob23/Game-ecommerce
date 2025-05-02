@@ -1,5 +1,5 @@
 import styles from './AddedToCart.module.css';
-import React, { useState } from 'react';
+import React from 'react';
 import { ReactComponent as Added } from "../../Resources/image/added.svg";
 import AnimatedCard from '../../Containers/AnimatedPage/AnimatedCard';
 

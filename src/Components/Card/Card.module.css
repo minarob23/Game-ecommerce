@@ -243,7 +243,7 @@
     color: white;
     padding-left: 14px;
     font-family: "GT Bold";
-    padding-bottom: 40px;
+    padding-bottom: 4px; /*Reduced padding to accommodate details*/
     cursor: pointer;
 }
 
@@ -283,6 +283,29 @@
 
 .likeSVG:focus {
     transform: scale(1.25);
+}
+
+.details {
+    font-size: 13px;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 12px;
+    font-family: "GT Medium";
+}
+
+.details span {
+    background: linear-gradient(135deg, #8467f3 0%, #c173ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    padding: 0 12px;
+}
+
+.details span:not(:last-child)::after {
+    content: "•";
+    position: absolute;
+    right: -8px;
+    -webkit-text-fill-color: #8467f3;
 }
 
 @media screen and (max-width: 1700px) {
@@ -336,5 +359,3 @@
         font-size: 26px;
     }
 }
-
-
